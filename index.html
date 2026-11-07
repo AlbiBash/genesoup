@@ -229,13 +229,14 @@
     g2.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const spacing = W < 520 ? 13 : W < 900 ? 15 : 17;
-    const count = Math.max(6, Math.floor((W - 40) / spacing));
-    const left = (W - (count - 1) * spacing) / 2;
+    const count = Math.max(6, Math.floor(W / spacing));
+    const step = W / count;                      // strings span the full width, no side padding
+    const left = step / 2;
     rowGap = W < 520 ? 13 : 15;
     fontPx = W < 520 ? 8 : 10;
     rows = Math.floor((H - 20) / rowGap);
     const top = (H - (rows - 1) * rowGap) / 2;
-    strings = Array.from({ length: count }, (_, i) => new GString(left + i * spacing, rows, i, count));
+    strings = Array.from({ length: count }, (_, i) => new GString(left + i * step, rows, i, count));
     strings.top = top;
   }
 
