@@ -82,27 +82,17 @@
 
   /* ---------- enter screen ---------- */
   body.locked { overflow:hidden; }
-  .enter { position:fixed; inset:0; z-index:50; display:flex; flex-direction:column; justify-content:flex-end; gap:28px; padding:0 clamp(20px,3.5vw,48px) clamp(40px,8vh,72px); background:#000; transition:opacity .6s ease, visibility 0s linear .6s; }
+  .enter { position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; background:#000; transition:opacity .6s ease, visibility 0s linear .6s; }
   .enter.leaving { opacity:0; visibility:hidden; }
-  .enter .mark { font-weight:700; font-size:clamp(48px,11vw,168px); line-height:.9; letter-spacing:-.055em; }
-  .enter .mark sup { font-size:.28em; font-weight:400; letter-spacing:0; vertical-align:top; position:relative; top:.4em; margin-left:.05em; }
-  .enter .sub { margin-top:14px; font:400 13px var(--mono); color:var(--dim); }
-  .enter .row { display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
-  .enter .quiet { background:none; border:0; color:var(--dim); font:500 13px var(--mono); text-decoration:underline; text-underline-offset:3px; cursor:pointer; min-height:44px; padding:0 4px; }
-  .enter .quiet:hover { color:#fff; }
+  .enter-btn { background:none; border:0; border-bottom:2px solid #fff; border-radius:0; color:#fff; font:600 18px var(--sans); letter-spacing:-.01em; padding:10px 4px; min-height:44px; cursor:pointer; transition:color .2s,border-color .2s; }
+  .enter-btn:focus-visible { outline:none; }
+  .enter-btn:hover { color:var(--dim); border-bottom-color:var(--dim); }
   @media (prefers-reduced-motion:reduce) { .enter { transition:none; } }
 </style>
 </head>
 <body>
 <div class="enter" id="enter" role="dialog" aria-modal="true" aria-label="Enter genesoup">
-  <div>
-    <div class="mark">genesoup<sup>™</sup></div>
-    <p class="sub">lifescience &amp; product design</p>
-  </div>
-  <div class="row">
-    <button class="cta" id="enterBtn" type="button">Enter</button>
-    <button class="quiet" id="enterQuiet" type="button">Enter without sound</button>
-  </div>
+  <button class="enter-btn" id="enterBtn" type="button">Enter</button>
 </div>
 <a class="skip" href="#contact-title">Skip to contact form</a>
 <header class="site-header" id="siteHeader">
@@ -350,7 +340,7 @@
 
   /* ---------- enter screen: one click gives the browser the gesture it needs to play sound ---------- */
   (() => {
-    const overlay = document.getElementById("enter"), btn = document.getElementById("enterBtn"), quiet = document.getElementById("enterQuiet");
+    const overlay = document.getElementById("enter"), btn = document.getElementById("enterBtn");
     const behind = [...document.querySelectorAll(".skip, .site-header, main, .contact")];
     behind.forEach(el => { el.inert = true; });
     document.body.classList.add("locked");
@@ -365,7 +355,6 @@
       document.getElementById("top").focus({ preventScroll: true });
     }
     btn.addEventListener("click", () => enter(true));
-    quiet.addEventListener("click", () => enter(false));
   })();
 
   /* ---------- simulation + render ---------- */
