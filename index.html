@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>genesoup — lifescience &amp; product design</title>
+<meta name="description" content="Shhhhh... We build things in stealth for you. Those who know, know.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --dim:#9a9a9a; --sans:"Inter","Helvetica Neue",Helvetica,Arial,sans-serif; --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace; }
+  * { box-sizing:border-box; margin:0; }
+  html { scroll-behavior:smooth; }
+  @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+  html,body { overflow-x:hidden; background:#000; color:#fff; font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+  a { color:#fff; text-decoration:none; }
+  :focus-visible { outline:2px solid #fff; outline-offset:3px; }
+  .hero { position:relative; z-index:1; height:100vh; height:100svh; overflow:hidden; }
+  #strings { position:fixed; inset:0; z-index:0; width:100%; height:100%; display:block; pointer-events:none; }
+  .page { position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; padding:88px clamp(20px,3.5vw,48px) 40px; pointer-events:none; }
+  .page a, .page button { pointer-events:auto; }
+  .body { flex:1; display:flex; flex-direction:column; justify-content:flex-end; gap:24px; padding-left:4px; }
+  h1 { font-weight:700; font-size:clamp(64px,8.9vw,128px); line-height:.86; letter-spacing:-.055em; }
+  .msg { max-width:560px; font-size:clamp(22px,2.3vw,32px); line-height:1.2; letter-spacing:-.02em; font-weight:500; color:#d0d0d0; }
+  .msg .d { display:none; }
+  @media (min-width:861px) { .msg .d { display:inline; } }
+  .cta { align-self:flex-start; display:inline-flex; align-items:center; border:2px solid #fff; border-radius:40px; padding:14px 24px; min-height:54px; font-size:18px; font-weight:600; letter-spacing:-.01em; background:#000; color:#fff; transition:background .2s,color .2s; }
+  .cta:hover { background:#fff; color:#000; }
+  .hint { position:absolute; z-index:3; right:clamp(20px,3.5vw,48px); bottom:40px; display:flex; align-items:center; gap:12px; font:400 13px var(--mono); color:var(--dim); }
+  .sound { display:inline-flex; align-items:center; gap:8px; cursor:pointer; padding:9px 14px; border-radius:40px; border:2px solid #fff; background:#000; color:#fff; font:500 13px var(--mono); white-space:nowrap; }
+  .sound .bars { display:inline-flex; gap:2px; align-items:flex-end; height:12px; }
+  .sound .bars i { width:2px; background:currentColor; }
+  .sound .bars i:nth-child(1){height:5px} .sound .bars i:nth-child(2){height:12px} .sound .bars i:nth-child(3){height:8px}
+  .sound[aria-pressed="false"] { border-color:#333; color:var(--dim); } .sound[aria-pressed="false"] .bars i { height:2px; }
+  .hint-text { transition:opacity .6s; } .hint-text.gone { opacity:0; }
+  @media (max-width:860px) { .hint { left:20px; right:20px; bottom:auto; top:auto; justify-content:space-between; bottom:calc(100svh - 100svh + 12px); } .body { padding-bottom:56px; } }
+
+  /* ---------- contact section (scroll down) ---------- */
+  .scrollcue { position:absolute; z-index:3; left:50%; bottom:40px; transform:translateX(-50%); font:400 13px var(--mono); color:var(--dim); display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .scrollcue::after { content:"↓"; font-size:16px; }
+  .contact { position:relative; min-height:100vh; min-height:100svh; padding:88px clamp(20px,3.5vw,48px) 40px; display:flex; flex-direction:column; background:transparent; z-index:1; }
+  .contact-body { flex:1; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,592px); gap:56px 48px; align-items:end; padding:64px 0 0 4px; }
+  .contact .display { font-weight:700; font-size:clamp(64px,8.9vw,128px); line-height:.86; letter-spacing:-.055em; }
+  .contact .lead { margin-top:24px; max-width:560px; font-size:clamp(22px,2.3vw,32px); line-height:1.2; letter-spacing:-.02em; font-weight:500; color:#d0d0d0; }
+  .contact .mail { display:inline-block; margin-top:20px; font-size:clamp(16px,1.4vw,20px); line-height:1.3; letter-spacing:-.01em; font-weight:500; text-decoration:underline; text-underline-offset:4px; }
+  form { display:flex; flex-direction:column; gap:20px; }
+  .field { display:flex; flex-direction:column; gap:8px; }
+  .field label { font:400 13px var(--mono); color:var(--dim); text-shadow:0 0 6px #000,0 0 10px #000; }
+  .field input, .field textarea { width:100%; background:#000; color:#fff; border:2px solid #333; border-radius:16px; padding:0 20px; height:54px; font:400 16px var(--sans); transition:border-color .2s; }
+  .field textarea { height:140px; padding:16px 20px; resize:vertical; min-height:140px; }
+  .field input::placeholder, .field textarea::placeholder { color:var(--dim); }
+  .field input:focus, .field textarea:focus { border-color:#fff; outline:none; }
+  .field[data-invalid="true"] input, .field[data-invalid="true"] textarea { border-color:#fff; border-style:dashed; }
+  .field .err { font:400 13px var(--mono); color:#fff; min-height:0; }
+  .field .err:empty { display:none; }
+  .actions { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  button.cta { font-family:inherit; cursor:pointer; }
+  .status { font:400 13px var(--mono); color:var(--dim); }
+  @media (max-width:860px) { .contact-body { grid-template-columns:1fr; align-items:start; padding-top:56px; } .scrollcue { display:none; } }
+
+  /* ---------- sticky header + flows ---------- */
+  html { scroll-padding-top:0; }
+  .skip { position:fixed; left:12px; top:-60px; z-index:30; background:#fff; color:#000; padding:12px 18px; border-radius:40px; font:600 14px var(--sans); transition:top .15s; }
+  .skip:focus { top:12px; }
+  .site-header { position:fixed; top:0; left:0; right:0; z-index:20; height:64px; padding:0 clamp(20px,3.5vw,48px); display:grid; grid-template-columns:1fr auto 1fr; align-items:center; background:#000; border-bottom:1px solid transparent; transition:border-color .2s; font-size:14px; }
+  .site-header.scrolled { border-bottom-color:#222; }
+  .brand, .navlink { display:inline-flex; align-items:center; min-height:44px; }
+  .brand { justify-self:start; font-weight:700; letter-spacing:-.01em; }
+  .tagline { color:var(--dim); }
+  nav { justify-self:end; }
+  .navlink { color:#fff; }
+  .navlink:hover, .brand:hover { color:var(--dim); }
+  .navlink[aria-current="true"] { text-decoration:underline; text-underline-offset:4px; }
+  @media (max-width:860px) { .site-header { grid-template-columns:1fr auto; } .tagline { display:none; } }
+  .scrollcue { min-height:44px; min-width:44px; justify-content:center; }
+  .scrollcue:hover { color:#fff; }
+  .field input:focus-visible, .field textarea:focus-visible { outline:2px solid #fff; outline-offset:2px; }
+  .sound { min-height:44px; }
+  .actions .copy { background:none; border:0; color:#fff; font:500 13px var(--mono); text-decoration:underline; text-underline-offset:3px; cursor:pointer; min-height:44px; padding:0 4px; }
+</style>
+</head>
+<body>
+<a class="skip" href="#contact-title">Skip to contact form</a>
+<header class="site-header" id="siteHeader">
+  <a class="brand" href="#top" id="brand" aria-label="genesoup — back to top"><b>genesoup™</b></a>
+  <span class="tagline">lifescience &amp; product design</span>
+  <nav aria-label="Main"><a class="navlink" href="#contact" id="navContact">Contact</a></nav>
+</header>
+<canvas id="strings" aria-hidden="true"></canvas>
+<main class="hero" id="top">
+  <div class="page">
+    <div class="body">
+      <h1>Shhhhh...</h1>
+      <p class="msg">We build things in stealth for you,<br class="d"> so there’s not much to share here,<br class="d"> those who know, know.</p>
+      <a class="cta" href="#contact">Contact us</a>
+    </div>
+  </div>
+  <div class="hint">
+    <span class="hint-text" id="hint">Move your cursor across the strands</span>
+    <button class="sound" id="sound" type="button" aria-pressed="true" aria-label="Sound on"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span><span id="soundLabel">Sound on</span></button>
+  </div>
+  <a class="scrollcue" href="#contact" aria-label="Scroll down to contact form">Scroll</a>
+</main>
+
+
+<section class="contact" id="contact" aria-labelledby="contact-title">
+  <div class="contact-body">
+    <div>
+      <h2 class="display" id="contact-title">Hello.</h2>
+      <p class="lead">Tell us what you’re building.</p>
+      <a class="mail" href="mailto:hello@genesoup.com">hello@genesoup.com</a>
+    </div>
+    <form id="contactForm" novalidate>
+      <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" type="text" autocomplete="name" placeholder="Your name" required><div class="err" id="e-name" aria-live="polite"></div></div>
+      <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required><div class="err" id="e-email" aria-live="polite"></div></div>
+      <div class="field"><label for="f-msg">Message</label><textarea id="f-msg" name="message" placeholder="What are you working on?" required></textarea><div class="err" id="e-msg" aria-live="polite"></div></div>
+      <div class="actions"><button class="cta" type="submit">Send message</button><span class="status" id="formStatus" role="status" aria-live="polite"></span><button class="copy" id="copyMail" type="button" hidden>Copy email address</button></div>
+    </form>
+  </div>
+</section>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ================= audio ================= */
+  const Sound = (() => {
+    let ctx = null, master = null, enabled = true;
+    const PENT = [0, 2, 4, 7, 9];
+
+    function impulse(c, seconds, decay) {
+      const len = Math.floor(c.sampleRate * seconds);
+      const buf = c.createBuffer(2, len, c.sampleRate);
+      for (let ch = 0; ch < 2; ch++) {
+        const d = buf.getChannelData(ch);
+        for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+      }
+      return buf;
+    }
+
+    function init() {
+      if (ctx) return ctx.state === "suspended" ? ctx.resume() : null;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { enabled = false; return; }
+      ctx = new AC();
+      const comp = ctx.createDynamicsCompressor();
+      comp.threshold.value = -18; comp.ratio.value = 6;
+      master = ctx.createGain(); master.gain.value = 0.7;
+      const dry = ctx.createGain(); dry.gain.value = 0.7;
+      const wet = ctx.createGain(); wet.gain.value = 0.55;
+      const verb = ctx.createConvolver(); verb.buffer = impulse(ctx, 3.2, 2.6);
+      master.connect(dry); master.connect(verb); verb.connect(wet);
+      dry.connect(comp); wet.connect(comp); comp.connect(ctx.destination);
+    }
+
+    /* index 0..count-1 → pentatonic note over ~3 octaves */
+    function freqFor(index, count) {
+      const steps = Math.min(count, 20);
+      const k = count > 1 ? Math.round(index * (steps - 1) / (count - 1)) : 0;
+      const midi = 60 + PENT[k % 5] + 12 * Math.floor(k / 5);
+      return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    function chime(index, count, velocity) {
+      if (!enabled || !ctx || ctx.state !== "running") return;
+      const f = freqFor(index, count);
+      const t = ctx.currentTime;
+      const v = Math.min(1, 0.18 + velocity);
+      const partials = [[1, 1, 2.8], [2.76, 0.32, 1.5], [5.4, 0.14, 0.7], [8.93, 0.05, 0.35]];
+      const out = ctx.createGain();
+      out.gain.value = 0.32 * v;
+      out.connect(master);
+      for (const [ratio, amp, dur] of partials) {
+        const fr = f * ratio;
+        if (fr > 12000) continue;
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = "sine"; o.frequency.value = fr;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(amp, t + 0.004);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        o.connect(g); g.connect(out);
+        o.start(t); o.stop(t + dur + 0.05);
+      }
+      out.gain.setTargetAtTime(0, t + 3, 0.5);
+      setTimeout(() => out.disconnect(), 4500);
+    }
+
+    return {
+      init, chime,
+      get enabled() { return enabled; },
+      set enabled(v) { enabled = v; },
+      get ready() { return !!ctx && ctx.state === "running"; }
+    };
+  })();
+
+  /* ================= strings ================= */
+  const canvas = document.getElementById("strings");
+  const hero = document.getElementById("top");
+  const g2 = canvas.getContext("2d");
+  const BASES = "ATGC";
+  const COLORS = { A: "#ffffff", T: "#cfcfcf", G: "#9a9a9a", C: "#6a6a6a" };
+  const PAIR = { A: "T", T: "A", G: "C", C: "G" };
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  let W = 0, H = 0, dpr = 1;
+  let strings = [];
+  let rows = 0, rowGap = 24, fontPx = 15;
+
+  class GString {
+    constructor(x, n, index, count) {
+      this.x = x; this.n = n; this.index = index; this.count = count;
+      this.u = new Float32Array(n);   // displacement
+      this.v = new Float32Array(n);   // velocity
+      this.energy = 0;
+      this.last = 0;
+      this.letters = Array.from({ length: n }, () => BASES[(Math.random() * 4) | 0]);
+      // second strand neighbour (complementary look) is implied by pairing colours
+    }
+    pluck(row, dir, amp) {
+      const sigma = 4;
+      for (let i = 1; i < this.n - 1; i++) {
+        const d = (i - row) / sigma;
+        const w = Math.exp(-d * d);
+        if (w > 0.02) {
+          this.v[i] += dir * amp * w;
+          if (Math.random() < 0.22 * w) this.letters[i] = BASES[(Math.random() * 4) | 0];
+        }
+      }
+    }
+    step(c2, damp, nu) {
+      const { u, v, n } = this;
+      let e = 0;
+      for (let i = 1; i < n - 1; i++) {
+        const a = c2 * (u[i - 1] + u[i + 1] - 2 * u[i])
+                + nu * (v[i - 1] + v[i + 1] - 2 * v[i]) - damp * v[i];
+        v[i] += a;
+      }
+      for (let i = 1; i < n - 1; i++) { u[i] += v[i]; e += v[i] * v[i]; }
+      this.energy = e;
+    }
+  }
+
+  function build() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const r = { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+    W = r.width; H = r.height;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    g2.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const spacing = W < 520 ? 13 : W < 900 ? 15 : 17;
+    const count = Math.max(6, Math.floor((W - 40) / spacing));
+    const left = (W - (count - 1) * spacing) / 2;
+    rowGap = W < 520 ? 13 : 15;
+    fontPx = W < 520 ? 8 : 10;
+    rows = Math.floor((H - 20) / rowGap);
+    const top = (H - (rows - 1) * rowGap) / 2;
+    strings = Array.from({ length: count }, (_, i) => new GString(left + i * spacing, rows, i, count));
+    strings.top = top;
+  }
+
+  /* pointer → crossing detection */
+  let prev = null, prevT = 0;
+  function onMove(clientX, clientY, t) {
+    const r = { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+    const x = clientX - r.left, y = clientY - r.top;
+    if (y < 0 || y > r.height || x < 0 || x > r.width) { prev = null; return; }
+    if (prev) {
+      const dx = x - prev.x;
+      if (dx !== 0) {
+        const dt = Math.max(1, t - prevT);
+        const speed = Math.abs(dx) / dt;           // px per ms
+        for (const s of strings) {
+          if ((prev.x - s.x) * (x - s.x) <= 0 && !(prev.x === s.x && x === s.x)) {
+            const k = (s.x - prev.x) / dx;
+            const yy = prev.y + (y - prev.y) * k;
+            const row = (yy - strings.top) / rowGap;
+            if (row < 1 || row > rows - 2) continue;
+            const amp = Math.min(2.2, 0.35 + speed * 0.9);
+            s.pluck(row, Math.sign(dx), amp);
+            if (t - s.last > 70 && t - lastAny > 25) {
+              lastAny = t;
+              s.last = t;
+              Sound.chime(s.index, s.count, Math.min(1, speed * 0.7));
+            }
+            hideHint();
+          }
+        }
+      }
+    }
+    prev = { x, y }; prevT = t;
+  }
+
+  let lastAny = 0;
+  let hinted = false;
+  function hideHint() {
+    if (hinted) return; hinted = true;
+    document.getElementById("hint").classList.add("gone");
+  }
+
+  function unlockAudio() { Sound.init(); }
+  window.addEventListener("pointermove", e => { unlockAudio(); onMove(e.clientX, e.clientY, e.timeStamp); }, { passive: true });
+  window.addEventListener("pointerdown", e => { unlockAudio(); prev = null; onMove(e.clientX, e.clientY, e.timeStamp); }, { passive: true });
+  window.addEventListener("pointerup", () => { prev = null; }, { passive: true });
+  hero.addEventListener("pointerleave", () => { prev = null; });
+  window.addEventListener("keydown", unlockAudio, { once: true });
+
+  /* keyboard users: arrow keys strum across strings, enter/space on hero is not needed */
+  const soundBtn = document.getElementById("sound");
+  const soundLabel = document.getElementById("soundLabel");
+  soundBtn.addEventListener("click", () => {
+    Sound.init();
+    Sound.enabled = !Sound.enabled;
+    soundBtn.setAttribute("aria-pressed", String(Sound.enabled));
+    soundBtn.setAttribute("aria-label", Sound.enabled ? "Sound on" : "Sound off");
+    soundLabel.textContent = Sound.enabled ? "Sound on" : "Sound off";
+  });
+
+  /* ---------- simulation + render ---------- */
+  const STEP = 1000 / 60, SUB = 10, C2 = 0.5, DAMP = 0.0014, NU = 0.06;
+  let acc = 0, lastT = performance.now(), visible = true;
+
+  document.addEventListener("visibilitychange", () => { visible = !document.hidden; });
+
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (!visible) { lastT = now; return; }
+    acc += Math.min(100, now - lastT); lastT = now;
+    while (acc >= STEP) {
+      for (let k = 0; k < SUB; k++) for (const s of strings) s.step(C2, DAMP, NU);
+      acc -= STEP;
+    }
+    draw();
+  }
+
+  function draw() {
+    g2.clearRect(0, 0, W, H);
+    g2.font = `600 ${fontPx}px "JetBrains Mono", ui-monospace, Menlo, monospace`;
+    g2.textAlign = "center"; g2.textBaseline = "middle";
+    const top = strings.top;
+    for (const s of strings) {
+      const live = Math.min(1, Math.sqrt(s.energy) * 0.35);
+      // faint string line
+      g2.beginPath();
+      for (let i = 0; i < s.n; i++) {
+        const x = s.x + s.u[i], y = top + i * rowGap;
+        i ? g2.lineTo(x, y) : g2.moveTo(x, y);
+      }
+      g2.strokeStyle = `rgba(255,255,255,${0.07 + live * 0.35})`;
+      g2.lineWidth = 1;
+      g2.stroke();
+
+      for (let i = 0; i < s.n; i++) {
+        const u = s.u[i];
+        const x = s.x + u, y = top + i * rowGap;
+        const edge = Math.min(i, s.n - 1 - i) / 6;        // fade towards pinned ends
+        const local = Math.min(1, Math.abs(u) / 6);
+        const a = Math.min(1, edge) * Math.min(1, 0.2 + local * 0.8);
+        const L = s.letters[i];
+        g2.globalAlpha = a;
+        g2.fillStyle = COLORS[L];
+        g2.fillText(L, x, y);
+      }
+    }
+    g2.globalAlpha = 1;
+  }
+
+  let rz;
+  window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(build, 120); });
+
+  const start = () => { build(); requestAnimationFrame(frame); };
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(start);
+
+  /* ---------- contact form ---------- */
+  (() => {
+    const form = document.getElementById("contactForm");
+    const status = document.getElementById("formStatus");
+    const rules = {
+      name:    { el: "f-name",  err: "e-name",  msg: "Add your name so we know who to reply to.", ok: v => v.trim().length > 0 },
+      email:   { el: "f-email", err: "e-email", msg: "Add an email address like you@company.com so we can reply.", ok: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) },
+      message: { el: "f-msg",   err: "e-msg",   msg: "Add a few words about what you’re working on.", ok: v => v.trim().length > 0 }
+    };
+    function check(k, show) {
+      const r = rules[k], el = document.getElementById(r.el), good = r.ok(el.value);
+      const wrap = el.closest(".field");
+      if (show) { wrap.dataset.invalid = String(!good); good ? el.removeAttribute("aria-invalid") : el.setAttribute("aria-invalid", "true"); document.getElementById(r.err).textContent = good ? "" : r.msg; }
+      return good;
+    }
+    for (const k in rules) {
+      const el = document.getElementById(rules[k].el);
+      el.addEventListener("blur", () => check(k, true));
+      el.addEventListener("focus", () => { const w = el.closest(".field"); if (w.dataset.invalid === "true") { w.dataset.invalid = "false"; el.removeAttribute("aria-invalid"); document.getElementById(rules[k].err).textContent = ""; } });
+      el.addEventListener("input", () => { if (el.closest(".field").dataset.invalid === "true") { el.closest(".field").dataset.invalid = "false"; el.removeAttribute("aria-invalid"); document.getElementById(rules[k].err).textContent = ""; } });
+    }
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      let first = null;
+      for (const k in rules) if (!check(k, true) && !first) first = document.getElementById(rules[k].el);
+      if (first) { first.focus(); status.textContent = ""; return; }
+      const d = new FormData(form);
+      const subject = encodeURIComponent("Hello from " + d.get("name"));
+      const body = encodeURIComponent(d.get("message") + "\n\n— " + d.get("name") + " (" + d.get("email") + ")");
+      status.textContent = "Opening your email app. Nothing opened? Copy the address and write to us.";
+      document.getElementById("copyMail").hidden = false;
+      window.location.href = "mailto:hello@genesoup.com?subject=" + subject + "&body=" + body;
+    });
+  })();
+
+  /* ---------- header flows ---------- */
+  (() => {
+    const header = document.getElementById("siteHeader"), nav = document.getElementById("navContact");
+    const smooth = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    const onScroll = () => header.classList.toggle("scrolled", window.scrollY > 8);
+    onScroll(); window.addEventListener("scroll", onScroll, { passive: true });
+    document.getElementById("brand").addEventListener("click", e => {
+      e.preventDefault(); window.scrollTo({ top: 0, behavior: smooth }); history.replaceState(null, "", "#top");
+    });
+    new IntersectionObserver(([en]) => {
+      en.isIntersecting ? nav.setAttribute("aria-current", "true") : nav.removeAttribute("aria-current");
+    }, { threshold: 0.5 }).observe(document.getElementById("contact"));
+    document.getElementById("copyMail").addEventListener("click", async e => {
+      const btn = e.currentTarget, st = document.getElementById("formStatus");
+      try { await navigator.clipboard.writeText("hello@genesoup.com"); st.textContent = "Address copied: hello@genesoup.com"; }
+      catch { st.textContent = "Couldn’t copy automatically. The address is hello@genesoup.com."; }
+      btn.blur();
+    });
+  })();
+})();
+</script>
+</body>
+</html>
