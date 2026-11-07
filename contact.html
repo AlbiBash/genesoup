@@ -38,6 +38,13 @@
   .status { font:400 13px var(--mono); color:var(--dim); }
   @media (max-width:860px) { .contact-body { grid-template-columns:1fr; align-items:start; padding-top:56px; } }
 
+  @media (max-width:600px) {
+    .contact .display { font-size:44px; }
+    .contact .lead { font-size:17px; }
+    .contact .mail { font-size:14px; }
+    .cta { font-size:15px; padding:12px 20px; min-height:48px; }
+  }
+
   /* ---------- sticky header + flows ---------- */
   html { scroll-padding-top:0; }
   .site-header { position:fixed; top:0; left:0; right:0; z-index:20; height:64px; padding:0 clamp(20px,3.5vw,48px); display:grid; grid-template-columns:1fr auto 1fr; align-items:center; background:#000; border-bottom:1px solid transparent; transition:border-color .2s; font-size:14px; }
