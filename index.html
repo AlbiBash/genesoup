@@ -118,7 +118,7 @@
     }
 
     function init() {
-      if (ctx) return ctx.state === "suspended" ? ctx.resume().catch(() => {}) : null;
+      if (ctx) return ctx.state !== "running" ? ctx.resume().catch(() => {}) : null;   // also covers iOS "interrupted"
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) { enabled = false; return; }
       ctx = new AC();
@@ -131,7 +131,7 @@
       master.connect(dry); master.connect(verb); verb.connect(wet);
       dry.connect(comp); wet.connect(comp); comp.connect(ctx.destination);
       ctx.onstatechange = () => document.dispatchEvent(new Event("soundstate"));
-      if (ctx.state === "suspended") return ctx.resume().catch(() => {});
+      if (ctx.state !== "running") return ctx.resume().catch(() => {});
     }
 
     /* index 0..count-1 → pentatonic note over ~3 octaves */
@@ -376,8 +376,13 @@
   let rz;
   window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(build, 120); });
 
-  const start = () => { build(); requestAnimationFrame(frame); };
-  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(start);
+  // Start at once: waiting for web fonts left the strings empty (so no chimes) on slow connections.
+  // draw() sets the font every frame, so the letters pick up JetBrains Mono as soon as it arrives.
+  build(); requestAnimationFrame(frame);
+
+  // Coming back to the tab or via the browser back button: the audio engine may have been paused by the browser.
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) unlockAudio(); });
+  window.addEventListener("pageshow", e => { if (e.persisted) location.reload(); });   // restored from cache: start clean at Enter
 
   /* ---------- header ---------- */
   (() => {
