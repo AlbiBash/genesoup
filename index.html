@@ -67,7 +67,7 @@
   .enter-btn { background:none; border:0; border-radius:0; color:#fff; font:600 18px var(--sans); letter-spacing:-.01em; padding:10px 4px; min-height:44px; cursor:pointer; transition:color .2s,border-color .2s; }
   .enter-btn { text-decoration:underline; text-decoration-color:transparent; text-decoration-thickness:2px; text-underline-offset:3px; }
   .enter-btn:focus-visible { outline:none; }
-  .enter-btn:hover, .enter-btn:focus-visible { text-decoration-color:#fff; }
+  .enter-btn:hover, .enter.kbd .enter-btn:focus-visible { text-decoration-color:#fff; }
   @media (prefers-reduced-motion:reduce) { .enter { transition:none; } }
 </style>
 </head>
@@ -311,6 +311,7 @@
     behind.forEach(el => { el.inert = true; });
     document.body.classList.add("locked");
     btn.focus({ preventScroll: true });
+    window.addEventListener("keydown", () => overlay.classList.add("kbd"), { once: true });   // underline on focus only after real keyboard use
     function enter(withSound) {
       Sound.enabled = withSound; syncSound();
       if (withSound) { const p = Sound.init(); (p && p.then ? p : Promise.resolve()).then(() => Sound.chime(9, 20, 0.5)); }
